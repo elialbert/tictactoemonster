@@ -1,5 +1,6 @@
 import draw
 import ai
+import copy
 
 class Board(object):
     def __init__(self):
@@ -21,7 +22,11 @@ class Board(object):
         y = (coord[1] - 1) * 3 + 1 
         return (x,y)
 
-
+    def get_board_copy(self):
+        new_board = Board()
+        for board_prop in ['x_coords','y_coords','coord_dict','translated_coord_dict']: 
+            setattr(new_board, board_prop, copy.copy(getattr(self, board_prop)))
+        return new_board
 
 class TicTacToeGame(object):
     def __init__(self, params):
@@ -37,9 +42,9 @@ class TicTacToeGame(object):
         self.x_ai = None
         self.y_ai = None
         if params[0] == 'y':
-            self.x_ai = ai.AI('x',self.board)
+            self.x_ai = ai.AI('x',self.board, lookahead=False)
         if params[1] == 'y':
-            self.y_ai = ai.AI('y',self.board)
+            self.y_ai = ai.AI('y',self.board, lookahead=True)
 
     def switch_player(self):
         if self.player == 'x':
@@ -101,8 +106,8 @@ def start_game():
             break
 
 def get_params():
-    p1_ai = raw_input("player one computer? (y,n): ")
-    p2_ai = raw_input("player two computer? (y,n): ")
+    p1_ai = raw_input("player one easy computer? (y,n): ")
+    p2_ai = raw_input("player two hard computer? (y,n): ")
     return p1_ai,p2_ai
 
 if __name__ == "__main__":
