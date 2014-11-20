@@ -1,16 +1,20 @@
 import draw
+import ai
 
 class Board(object):
     def __init__(self):
         self.x_coords = [] # list of (x,y) tuples
         self.y_coords = []
         self.coord_dict = {}
+        self.translated_coord_dict = {}
         self.victory_coordlists = [[(1,1),(2,1),(3,1)],[(1,2),(2,2),(3,2)],[(1,3),(2,3),(3,3)],[(1,1),(1,2),(1,3)],[(2,1),(2,2),(2,3)],[(3,1),(3,2),(3,3)],[(1,1),(2,2),(3,3)],[(1,3),(2,2),(3,1)]]
+        self.all_coords = [(1,1),(1,2),(1,3),(2,1),(2,2),(2,3),(3,1),(3,2),(3,3)]
 
     def add_coord(self, player, coord):
         getattr(self, "{}_coords".format(player)).append(coord)
-        coord = self.translate_coord(coord)
         self.coord_dict[coord] = player
+        coord = self.translate_coord(coord)
+        self.translated_coord_dict[coord] = player
 
     def translate_coord(self, coord):
         x = (coord[0] - 1) * 3 + coord[0]
@@ -22,6 +26,7 @@ class Board(object):
 class TicTacToeGame(object):
     def __init__(self):
         self.board = Board()
+        self.ai = ai.AI('y')
         self.drawer = draw.TicTacToeDraw(self.board)
         self.drawer.construct_and_print_board()
         self.player = 'x'
@@ -34,7 +39,10 @@ class TicTacToeGame(object):
 
     def run_turn(self):
         print "to move: player {}".format(self.player)
-        incoming_coords = input("please input move coords (x,y): ")
+        if self.player == 'y':
+            incoming_coords = self.ai.get_move(self.board)
+        else:
+            incoming_coords = input("please input move coords (x,y): ")
         self.board.add_coord(self.player, incoming_coords)
         self.drawer.construct_and_print_board(self.board)
         victory = self.check_victory()

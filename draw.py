@@ -38,5 +38,5 @@ class TicTacToeDraw(object):
         return line_string
                 
     def get_entry(self, line_number, col_number):
-        val = self.board.coord_dict.get((col_number, line_number),' ')
+        val = self.board.translated_coord_dict.get((col_number, line_number),' ')
         return val
