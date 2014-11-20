@@ -26,7 +26,7 @@ class Board(object):
 class TicTacToeGame(object):
     def __init__(self):
         self.board = Board()
-        self.ai = ai.AI('y')
+        self.ai = ai.AI('y',self.board)
         self.drawer = draw.TicTacToeDraw(self.board)
         self.drawer.construct_and_print_board()
         self.player = 'x'
