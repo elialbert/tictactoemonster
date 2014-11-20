@@ -45,13 +45,13 @@ class TicTacToeGame(object):
             incoming_coords = input("please input move coords (x,y): ")
         self.board.add_coord(self.player, incoming_coords)
         self.drawer.construct_and_print_board(self.board)
-        victory = self.check_victory()
-        if victory:
-            self.end_game(victory)
+        end_game = self.check_end_game()
+        if end_game:
+            self.end_game(end_game)
             return True
         self.switch_player()
 
-    def check_victory(self):
+    def check_end_game(self):
         for player in ['x', 'y']:
             player_coords = getattr(self.board, "{}_coords".format(player))
             for victory_coords in self.board.victory_coordlists:
@@ -62,6 +62,8 @@ class TicTacToeGame(object):
                         break
                 if found:
                     return player
+        if len(self.board.coord_dict) == 9:
+            return "nobody"
 
     def end_game(self, winner):
         print "Game over: {} wins".format(winner)
