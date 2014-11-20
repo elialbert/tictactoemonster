@@ -24,12 +24,22 @@ class Board(object):
 
 
 class TicTacToeGame(object):
-    def __init__(self):
+    def __init__(self, params):
+        self.params = params
         self.board = Board()
-        self.ai = ai.AI('y',self.board)
+        self.setup_players(self.params)
+
         self.drawer = draw.TicTacToeDraw(self.board)
         self.drawer.construct_and_print_board()
         self.player = 'x'
+
+    def setup_players(self, params):
+        self.x_ai = None
+        self.y_ai = None
+        if params[0] == 'y':
+            self.x_ai = ai.AI('x',self.board)
+        if params[1] == 'y':
+            self.y_ai = ai.AI('y',self.board)
 
     def switch_player(self):
         if self.player == 'x':
@@ -39,10 +49,11 @@ class TicTacToeGame(object):
 
     def run_turn(self):
         print "to move: player {}".format(self.player)
-        if self.player == 'y':
-            incoming_coords = self.ai.get_move(self.board)
+        player_ai = getattr(self, "{}_ai".format(self.player))
+        if player_ai:
+            incoming_coords = player_ai.get_move(self.board)
         else:
-            incoming_coords = input("please input move coords (x,y): ")
+            incoming_coords = self.get_human_input()
         self.board.add_coord(self.player, incoming_coords)
         self.drawer.construct_and_print_board(self.board)
         end_game = self.check_end_game()
@@ -50,6 +61,19 @@ class TicTacToeGame(object):
             self.end_game(end_game)
             return True
         self.switch_player()
+
+    def get_human_input(self):
+        coords = input("please input move coords (x,y): ")
+        if coords in self.board.coord_dict:
+            print "that move is already taken!"
+            return self.get_human_input()
+        if type(coords) != tuple:
+            print "please input coords like: (2,3)"
+            return self.get_human_input()
+        while coords[0] not in [1,2,3] or coords[1] not in [1,2,3]:
+            print "those coords are not allowed! please choose two values from 1 to 3 like (2,3)"
+            return self.get_human_input()
+        return coords
 
     def check_end_game(self):
         for player in ['x', 'y']:
@@ -69,11 +93,17 @@ class TicTacToeGame(object):
         print "Game over: {} wins".format(winner)
 
 def start_game():
-    game = TicTacToeGame()
+    params = get_params()
+    game = TicTacToeGame(params)
     while True:
         game_over = game.run_turn()
         if game_over:
             break
+
+def get_params():
+    p1_ai = raw_input("player one computer? (y,n): ")
+    p2_ai = raw_input("player two computer? (y,n): ")
+    return p1_ai,p2_ai
 
 if __name__ == "__main__":
     start_game()

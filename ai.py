@@ -6,6 +6,7 @@ class AI(object):
     def __init__(self,player,board):
         self.board = board
         self.player = player
+        self.opponent = 'y' if player == 'x' else 'x'
         self.starting_moves = [(1,1),(3,1),(2,2),(1,3),(3,3)]
 
     def get_move(self, board):
@@ -31,8 +32,7 @@ class AI(object):
         return starting_moves[random.randint(0,len(starting_moves)-1)]
 
     def check_need_to_block(self):
-        opponent_coords = self.board.x_coords
-        my_coords = self.board.y_coords
+        opponent_coords, my_coords = self.get_coords()
         for victory_coordlist in self.board.victory_coordlists:
             num_found = 0
             not_found = None
@@ -46,8 +46,7 @@ class AI(object):
         return False
 
     def extend_chain(self):
-        my_coords = self.board.y_coords
-        opponent_coords = self.board.x_coords
+        opponent_coords, my_coords = self.get_coords()
         for victory_coordlist in self.board.victory_coordlists:
             num_found = 0
             not_found = None
@@ -62,3 +61,8 @@ class AI(object):
             available = [x for x in self.board.all_coords if x not in self.board.coord_dict]
             return False, available[random.randint(0,len(available)-1)]
         return False, not_found
+
+    def get_coords(self):
+        opponent_coords = getattr(self.board,"{}_coords".format(self.opponent))
+        my_coords = getattr(self.board,"{}_coords".format(self.player))
+        return opponent_coords, my_coords
