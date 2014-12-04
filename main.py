@@ -29,8 +29,9 @@ class Board(object):
         return new_board
 
 class TicTacToeGame(object):
-    def __init__(self, params):
+    def __init__(self, params, fast_mode=False):
         self.params = params
+        self.fast_mode = fast_mode
         self.board = Board()
         self.setup_players(self.params)
 
@@ -42,9 +43,9 @@ class TicTacToeGame(object):
         self.x_ai = None
         self.y_ai = None
         if params[0] == 'y':
-            self.x_ai = ai.AI('x',self.board, lookahead=False)
+            self.x_ai = ai.AI('x',self.board, lookahead=False, fast_mode=self.fast_mode)
         if params[1] == 'y':
-            self.y_ai = ai.AI('y',self.board, lookahead=True)
+            self.y_ai = ai.AI('y',self.board, lookahead=True, fast_mode=self.fast_mode)
 
     def switch_player(self):
         if self.player == 'x':
@@ -64,7 +65,7 @@ class TicTacToeGame(object):
         end_game = self.check_end_game()
         if end_game:
             self.end_game(end_game)
-            return True
+            return end_game
         self.switch_player()
 
     def get_human_input(self):
@@ -97,12 +98,15 @@ class TicTacToeGame(object):
     def end_game(self, winner):
         print "Game over: {} wins".format(winner)
 
-def start_game():
-    params = get_params()
-    game = TicTacToeGame(params)
+def start_game(params=None, return_winner=False, fast_mode=False):
+    if not params:
+        params = get_params()
+    game = TicTacToeGame(params, fast_mode=fast_mode)
     while True:
         game_over = game.run_turn()
         if game_over:
+            if return_winner:
+                return game_over
             break
 
 def get_params():

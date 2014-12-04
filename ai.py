@@ -4,16 +4,18 @@ import copy
 from time import sleep
 
 class AI(object):
-    def __init__(self,player,board, lookahead=True):
+    def __init__(self,player,board, lookahead=True, fast_mode=False):
         self.board = board
         self.player = player
+        self.fast_mode=fast_mode
         self.lookahead=lookahead
         self.opponent = 'y' if player == 'x' else 'x'
         self.starting_moves = [(1,1),(3,1),(2,2),(1,3),(3,3)]
 
     def get_move(self, board):
-        print "computer is thinking..."
-        sleep(.5)
+        if not self.fast_mode:
+            print "computer is thinking..."
+            sleep(.5)
         self.board = board
         if not self.board.x_coords or not self.board.y_coords:
             return self.get_starting_move()
